@@ -33,7 +33,7 @@ const Settings: React.FC = () => {
     autoOptimization: true,
     learningMode: 'adaptive',
     confidenceThreshold: 85,
-    modelVersion: 'sea-lion-v3.2.1'
+    modelVersion: 'tidb-ai-v3.2.1'
   });
 
   const tabs = [
@@ -354,7 +354,7 @@ const Settings: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <Brain className="text-purple-400" size={24} />
                       <div>
-                        <h4 className="text-purple-400 font-medium">SEA-LION AI Engine</h4>
+                        <h4 className="text-purple-400 font-medium">TiDB Serverless AI Engine</h4>
                         <p className="text-gray-400 text-sm">Advanced AI models for logistics optimization</p>
                       </div>
                     </div>
@@ -418,9 +418,9 @@ const Settings: React.FC = () => {
                           onChange={(e) => setAiSettings(prev => ({ ...prev, modelVersion: e.target.value }))}
                           className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500"
                         >
-                          <option value="sea-lion-v3.2.1">SEA-LION v3.2.1 (Latest)</option>
-                          <option value="sea-lion-v3.1.0">SEA-LION v3.1.0 (Stable)</option>
-                          <option value="sea-lion-v3.0.5">SEA-LION v3.0.5 (Legacy)</option>
+                          <option value="tidb-ai-v3.2.1">TiDB AI v3.2.1 (Latest)</option>
+                          <option value="tidb-ai-v3.1.0">TiDB AI v3.1.0 (Stable)</option>
+                          <option value="tidb-ai-v3.0.5">TiDB AI v3.0.5 (Legacy)</option>
                         </select>
                       </div>
                     </div>

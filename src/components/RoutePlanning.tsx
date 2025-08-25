@@ -114,7 +114,7 @@ const RoutePlanning: React.FC = () => {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2 bg-blue-900/30 px-4 py-2 rounded-lg">
             <Brain className="text-blue-400" size={20} />
-            <span className="text-blue-400 font-medium">SEA-LION AI</span>
+            <span className="text-blue-400 font-medium">TiDB Serverless AI</span>
           </div>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
             <Plus size={20} />
@@ -125,7 +125,7 @@ const RoutePlanning: React.FC = () => {
 
       {/* Optimization Controls */}
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">SEA-LION AI Optimization</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">TiDB Serverless AI Optimization</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gray-700/50 rounded-lg p-4">
@@ -174,7 +174,7 @@ const RoutePlanning: React.FC = () => {
         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
           <div className="flex items-center space-x-3 mb-3">
             <Brain className="text-blue-400" size={20} />
-            <h4 className="text-blue-400 font-medium">SEA-LION AI Recommendations</h4>
+            <h4 className="text-blue-400 font-medium">TiDB Serverless AI Recommendations</h4>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>

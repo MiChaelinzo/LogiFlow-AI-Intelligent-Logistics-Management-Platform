@@ -387,7 +387,7 @@ export async function emergencyResponseWorkflow(emergencyType: string, location:
     
     Similar Past Emergencies: ${JSON.stringify(similarEmergencies.slice(0, 3))}
     
-    Provide immediate action steps, resource allocation, and response timeline.
+    Provide immediate action steps, resource allocation, and response timeline based on TiDB Serverless vector search analysis of similar incidents.
     `;
 
     const client = getOpenAIClient();
@@ -396,7 +396,7 @@ export async function emergencyResponseWorkflow(emergencyType: string, location:
       messages: [
         {
           role: "system",
-          content: "You are an emergency response coordination AI. Provide clear, immediate action steps for emergency situations in logistics operations."
+          content: "You are a TiDB Serverless AI expert for emergency response coordination. Use vector similarity search results to provide clear, immediate action steps for emergency situations in logistics operations."
         },
         {
           role: "user",

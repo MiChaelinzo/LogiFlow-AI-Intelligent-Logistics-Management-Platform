@@ -168,7 +168,7 @@ const DroneOperations: React.FC = () => {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2 bg-purple-900/30 px-4 py-2 rounded-lg">
             <Brain className="text-purple-400" size={20} />
-            <span className="text-purple-400 font-medium">SEA-LION Autopilot</span>
+            <span className="text-purple-400 font-medium">TiDB AI Autopilot</span>
           </div>
           <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
             <Plane size={20} />

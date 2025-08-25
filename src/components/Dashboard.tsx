@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="flex items-center space-x-2 bg-green-900/30 px-3 py-2 rounded-lg">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-400 text-sm font-medium">AI Online</span>
+                <span className="text-green-400 text-sm font-medium">TiDB AI Online</span>
               </div>
               
               {/* User Menu */}
