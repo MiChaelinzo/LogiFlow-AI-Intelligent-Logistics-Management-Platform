@@ -8,7 +8,8 @@ import {
   Settings,
   Plane,
   Zap,
-  Database
+  Database,
+  Plus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -20,6 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'fleet', label: 'Fleet Management', icon: Truck },
+    { id: 'fleet-management', label: 'Add Vehicles', icon: Plus },
     { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'analytics', label: 'AI Analytics', icon: BarChart3 },
     { id: 'routes', label: 'Route Planning', icon: MapPin },

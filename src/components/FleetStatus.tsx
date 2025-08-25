@@ -26,9 +26,9 @@ const FleetStatus: React.FC<FleetStatusProps> = ({ expanded = false }) => {
       name: 'Alpha Freight 1',
       status: 'en-route',
       battery: 85,
-      location: 'Route 95, Mile 127',
+      location: { address: 'Route 95, Mile 127' },
       eta: '2:30 PM',
-      cargo: 'Electronics (2.4T)',
+      cargo: { type: 'Electronics (2.4T)' },
       efficiency: 94
     },
     {
@@ -37,9 +37,9 @@ const FleetStatus: React.FC<FleetStatusProps> = ({ expanded = false }) => {
       name: 'Sky Courier 7',
       status: 'delivering',
       battery: 67,
-      location: 'Downtown Sector 3',
+      location: { address: 'Downtown Sector 3' },
       eta: '1:45 PM',
-      cargo: 'Medical Supplies (5kg)',
+      cargo: { type: 'Medical Supplies (5kg)' },
       efficiency: 98
     },
     {
@@ -48,9 +48,9 @@ const FleetStatus: React.FC<FleetStatusProps> = ({ expanded = false }) => {
       name: 'Beta Transport 3',
       status: 'charging',
       battery: 23,
-      location: 'Charging Station A',
+      location: { address: 'Charging Station A' },
       eta: '4:15 PM',
-      cargo: 'Consumer Goods (3.1T)',
+      cargo: { type: 'Consumer Goods (3.1T)' },
       efficiency: 89
     },
     {
@@ -59,9 +59,9 @@ const FleetStatus: React.FC<FleetStatusProps> = ({ expanded = false }) => {
       name: 'Swift Delivery 12',
       status: 'maintenance',
       battery: 100,
-      location: 'Service Bay 2',
+      location: { address: 'Service Bay 2' },
       eta: 'Tomorrow 9:00 AM',
-      cargo: 'None',
+      cargo: { type: 'None' },
       efficiency: 85
     }
   ]);

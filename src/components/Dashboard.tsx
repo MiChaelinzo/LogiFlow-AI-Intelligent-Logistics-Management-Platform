@@ -28,12 +28,15 @@ import AIAutomation from './AIAutomation';
 import Settings from './Settings';
 import AuthModal from './AuthModal';
 import TiDBAIAgent from './TiDBAIAgent';
+import FleetManagement from './FleetManagement';
+import OnboardingModal from './OnboardingModal';
 
 const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState('overview');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [notifications, setNotifications] = useState([
     { id: 1, message: 'Route optimization completed - 15% efficiency gain', type: 'success', time: '2 min ago' },
     { id: 2, message: 'Drone DRN-007 battery low - returning to base', type: 'warning', time: '5 min ago' },
@@ -49,6 +52,11 @@ const Dashboard: React.FC = () => {
     });
     setIsAuthenticated(true);
     setShowAuthModal(false);
+    
+    // Show onboarding for new users (not demo)
+    if (email !== 'demo@logiflow.com') {
+      setShowOnboarding(true);
+    }
   };
 
   const handleLogout = () => {
@@ -207,6 +215,12 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           
+          {activeView === 'fleet-management' && (
+            <div className="p-6">
+              <FleetManagement />
+            </div>
+          )}
+          
           {activeView === 'inventory' && (
             <div className="p-6">
               <InventoryOverview expanded />
@@ -250,6 +264,13 @@ const Dashboard: React.FC = () => {
           )}
         </main>
       </div>
+      
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={() => setActiveView('fleet-management')}
+      />
     </div>
   );
 };
