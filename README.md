@@ -1,6 +1,6 @@
 # LogiFlow AI - TiDB Serverless Logistics Platform
 
-An intelligent logistics management platform powered by **TiDB Serverless** vector search and multi-step AI agents. This application showcases innovative agentic workflows that chain together data ingestion, vector search, LLM analysis, and automated actions.
+An intelligent logistics management platform powered by **TiDB Serverless** vector search and multi-step AI agents. This application showcases innovative agentic workflows that chain together data ingestion, vector search, TiDB AI analysis, and automated actions.
 
 ## 🚀 Key Features
 

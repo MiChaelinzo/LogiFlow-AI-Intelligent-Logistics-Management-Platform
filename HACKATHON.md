@@ -4,7 +4,7 @@ The logistics industry faces massive inefficiencies - delayed deliveries, vehicl
 
 ## What it does 🎯
 
-**LogiFlow AI** is an intelligent logistics management platform that showcases innovative **agentic workflows** powered by TiDB Serverless. Our system demonstrates three groundbreaking multi-step AI agents:
+**LogiFlow AI** is an intelligent logistics management platform that showcases innovative **agentic workflows** powered by TiDB Serverless AI. Our system demonstrates three groundbreaking multi-step AI agents:
 
 🔧 **Predictive Maintenance Agent**: Ingests vehicle telemetry → searches similar patterns via vector search → chains LLM analysis → automatically schedules maintenance
 

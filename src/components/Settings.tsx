@@ -347,7 +347,7 @@ const Settings: React.FC = () => {
             {/* AI Settings */}
             {activeTab === 'ai' && (
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-6">AI & Automation Settings</h3>
+                <h3 className="text-xl font-semibold text-white mb-6">TiDB AI & Automation Settings</h3>
                 
                 <div className="space-y-6">
                   <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
@@ -355,7 +355,7 @@ const Settings: React.FC = () => {
                       <Brain className="text-purple-400" size={24} />
                       <div>
                         <h4 className="text-purple-400 font-medium">TiDB Serverless AI Engine</h4>
-                        <p className="text-gray-400 text-sm">Advanced AI models for logistics optimization</p>
+                        <p className="text-gray-400 text-sm">Advanced TiDB AI models for logistics optimization</p>
                       </div>
                     </div>
                   </div>
@@ -366,7 +366,7 @@ const Settings: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <h5 className="text-white font-medium">Auto-Optimization</h5>
-                          <p className="text-gray-400 text-sm">Allow AI to automatically optimize routes and schedules</p>
+                          <p className="text-gray-400 text-sm">Allow TiDB AI to automatically optimize routes and schedules</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input 

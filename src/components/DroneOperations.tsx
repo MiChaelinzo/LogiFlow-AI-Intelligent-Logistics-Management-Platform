@@ -162,7 +162,7 @@ const DroneOperations: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Drone Operations</h1>
-          <p className="text-gray-400">Advanced autonomous drone fleet management with SEA-LION AI</p>
+          <p className="text-gray-400">Advanced autonomous drone fleet management with TiDB Serverless AI</p>
         </div>
         
         <div className="flex items-center space-x-4">

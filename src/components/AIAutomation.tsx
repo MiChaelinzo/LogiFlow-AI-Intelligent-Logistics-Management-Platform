@@ -165,13 +165,13 @@ const AIAutomation: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">AI Automation</h1>
-          <p className="text-gray-400">Advanced SEA-LION AI models powering intelligent logistics automation</p>
+          <p className="text-gray-400">Advanced TiDB Serverless AI models powering intelligent logistics automation</p>
         </div>
         
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2 bg-purple-900/30 px-4 py-2 rounded-lg">
             <Brain className="text-purple-400" size={20} />
-            <span className="text-purple-400 font-medium">SEA-LION AI</span>
+            <span className="text-purple-400 font-medium">TiDB AI</span>
             <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
           </div>
           <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
@@ -183,7 +183,7 @@ const AIAutomation: React.FC = () => {
 
       {/* AI Control Center */}
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">SEA-LION AI Control Center</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">TiDB Serverless AI Control Center</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gray-700/50 rounded-lg p-4">
@@ -204,7 +204,7 @@ const AIAutomation: React.FC = () => {
             <h4 className="text-white font-medium mb-2">Model Version</h4>
             <div className="flex items-center space-x-2">
               <Cpu size={16} className="text-purple-400" />
-              <span className="text-white">SEA-LION v3.2.1</span>
+              <span className="text-white">TiDB AI v3.2.1</span>
             </div>
           </div>
           
@@ -352,8 +352,8 @@ const AIAutomation: React.FC = () => {
         <div className="space-y-6">
           <div className="bg-gray-800 rounded-xl border border-gray-700">
             <div className="p-4 border-b border-gray-700">
-              <h3 className="text-lg font-semibold text-white">SEA-LION Model Management</h3>
-              <p className="text-gray-400 text-sm">Monitor and manage AI model performance</p>
+              <h3 className="text-lg font-semibold text-white">TiDB AI Model Management</h3>
+              <p className="text-gray-400 text-sm">Monitor and manage TiDB AI model performance</p>
             </div>
             
             <div className="p-4 space-y-4">
@@ -362,7 +362,7 @@ const AIAutomation: React.FC = () => {
                   <div className="flex items-center space-x-3">
                     <Brain className="text-purple-400" size={24} />
                     <div>
-                      <h4 className="text-white font-medium">SEA-LION Core</h4>
+                      <h4 className="text-white font-medium">TiDB AI Core</h4>
                       <p className="text-gray-400 text-sm">v3.2.1 • Production</p>
                     </div>
                   </div>

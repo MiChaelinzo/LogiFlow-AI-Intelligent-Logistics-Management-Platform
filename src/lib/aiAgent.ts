@@ -428,7 +428,7 @@ export async function emergencyResponseWorkflow(emergencyType: string, location:
     recommendations.push(`📍 Location: ${location}`);
     recommendations.push(`🚑 ${availableVehicles.length} vehicles dispatched`);
     recommendations.push(`⏰ ETA: 8-12 minutes`);
-    recommendations.push(`🤖 AI Strategy: ${aiStrategy.split('.')[0]}.`);
+    recommendations.push(`🤖 TiDB AI Strategy: ${aiStrategy.split('.')[0]}.`);
     
     steps.push("✅ Emergency response workflow completed - all systems coordinated");
 
