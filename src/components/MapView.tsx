@@ -16,6 +16,8 @@ const MapView: React.FC = () => {
   const [mapFilter, setMapFilter] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showRouteOptimization, setShowRouteOptimization] = useState(false);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showTrafficLayer, setShowTrafficLayer] = useState(false);
 
   const vehicles = [
     { id: '1', type: 'truck', lat: 40.7128, lng: -74.0060, status: 'en-route', name: 'Truck Alpha-1' },
@@ -223,6 +225,18 @@ const MapView: React.FC = () => {
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               <span className="text-gray-400">Drones: {vehicles.filter(v => v.type === 'drone').length} active</span>
             </div>
+            {showHeatmap && (
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span className="text-gray-400">High Activity Zones</span>
+              </div>
+            )}
+            {showTrafficLayer && (
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span className="text-gray-400">Traffic Conditions</span>
+              </div>
+            )}
           </div>
           <span className="text-gray-400">Last updated: {new Date().toLocaleTimeString()}</span>
         </div>

@@ -1,12 +1,29 @@
 import { connect } from '@tidbcloud/serverless';
 
-// TiDB Serverless connection
-const conn = connect({
-  host: import.meta.env.VITE_TIDB_HOST,
-  username: import.meta.env.VITE_TIDB_USERNAME,
-  password: import.meta.env.VITE_TIDB_PASSWORD,
-  database: import.meta.env.VITE_TIDB_DATABASE,
-});
+// TiDB Serverless connection - only initialize if credentials are available
+let conn: any = null;
+
+function getConnection() {
+  if (!conn) {
+    const host = import.meta.env.VITE_TIDB_HOST;
+    const username = import.meta.env.VITE_TIDB_USERNAME;
+    const password = import.meta.env.VITE_TIDB_PASSWORD;
+    const database = import.meta.env.VITE_TIDB_DATABASE;
+    
+    if (!host || !username || !password || !database) {
+      console.warn('TiDB credentials not configured. Using mock data.');
+      return null;
+    }
+    
+    try {
+      conn = connect({ host, username, password, database });
+    } catch (error) {
+      console.error('Failed to connect to TiDB:', error);
+      return null;
+    }
+  }
+  return conn;
+}
 
 export interface LogisticsEvent {
   id?: number;
@@ -48,8 +65,14 @@ export interface RouteOptimization {
 // Initialize database tables with vector support
 export async function initializeDatabase() {
   try {
+    const connection = getConnection();
+    if (!connection) {
+      console.log('Database initialized (mock mode)');
+      return;
+    }
+    
     // Create logistics_events table with vector column
-    await conn.execute(`
+    await connection.execute(`
       CREATE TABLE IF NOT EXISTS logistics_events (
         id INT AUTO_INCREMENT PRIMARY KEY,
         event_type VARCHAR(100) NOT NULL,
@@ -67,7 +90,7 @@ export async function initializeDatabase() {
     `);
 
     // Create vehicles table with vector support
-    await conn.execute(`
+    await connection.execute(`
       CREATE TABLE IF NOT EXISTS vehicles (
         id INT AUTO_INCREMENT PRIMARY KEY,
         vehicle_id VARCHAR(50) UNIQUE NOT NULL,
@@ -87,7 +110,7 @@ export async function initializeDatabase() {
     `);
 
     // Create route_optimizations table with vector support
-    await conn.execute(`
+    await connection.execute(`
       CREATE TABLE IF NOT EXISTS route_optimizations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         route_id VARCHAR(100) UNIQUE NOT NULL,
@@ -115,7 +138,13 @@ export async function initializeDatabase() {
 // Insert logistics event with vector embedding
 export async function insertLogisticsEvent(event: LogisticsEvent) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      console.log('Mock: Logistics event inserted');
+      return { insertId: Math.floor(Math.random() * 1000) };
+    }
+    
+    const result = await connection.execute(
       `INSERT INTO logistics_events 
        (event_type, vehicle_id, location, metadata, embedding, severity, description) 
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -139,7 +168,32 @@ export async function insertLogisticsEvent(event: LogisticsEvent) {
 // Vector search for similar logistics events
 export async function searchSimilarEvents(queryEmbedding: number[], limit: number = 5) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      // Return mock data for demo
+      return [
+        {
+          id: 1,
+          event_type: 'vehicle_breakdown',
+          vehicle_id: 'TRK-001',
+          location: 'Highway 95, Mile 127',
+          description: 'Engine overheating detected',
+          severity: 'high',
+          similarity_score: 0.15
+        },
+        {
+          id: 2,
+          event_type: 'maintenance_alert',
+          vehicle_id: 'TRK-003',
+          location: 'Service Bay 2',
+          description: 'Brake pads require replacement',
+          severity: 'medium',
+          similarity_score: 0.23
+        }
+      ];
+    }
+    
+    const result = await connection.execute(
       `SELECT id, event_type, vehicle_id, location, timestamp, metadata, severity, description,
               VEC_COSINE_DISTANCE(embedding, ?) as similarity_score
        FROM logistics_events 
@@ -158,7 +212,13 @@ export async function searchSimilarEvents(queryEmbedding: number[], limit: numbe
 // Insert or update vehicle data
 export async function upsertVehicleData(vehicle: VehicleData) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      console.log('Mock: Vehicle data upserted');
+      return { affectedRows: 1 };
+    }
+    
+    const result = await connection.execute(
       `INSERT INTO vehicles 
        (vehicle_id, vehicle_type, current_location, battery_level, status, last_maintenance, embedding, performance_metrics)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -190,6 +250,31 @@ export async function upsertVehicleData(vehicle: VehicleData) {
 // Search vehicles by similarity
 export async function searchSimilarVehicles(queryEmbedding: number[], vehicleType?: string, limit: number = 10) {
   try {
+    const connection = getConnection();
+    if (!connection) {
+      // Return mock data for demo
+      return [
+        {
+          vehicle_id: 'TRK-002',
+          vehicle_type: 'truck',
+          current_location: 'Downtown District',
+          battery_level: 85,
+          status: 'active',
+          performance_metrics: { fuel_efficiency: 8.5, engine_temp: 87 },
+          similarity_score: 0.12
+        },
+        {
+          vehicle_id: 'TRK-004',
+          vehicle_type: 'truck',
+          current_location: 'Industrial Zone',
+          battery_level: 67,
+          status: 'en-route',
+          performance_metrics: { fuel_efficiency: 7.8, engine_temp: 92 },
+          similarity_score: 0.18
+        }
+      ];
+    }
+    
     let query = `
       SELECT vehicle_id, vehicle_type, current_location, battery_level, status, 
              performance_metrics, VEC_COSINE_DISTANCE(embedding, ?) as similarity_score
@@ -207,7 +292,7 @@ export async function searchSimilarVehicles(queryEmbedding: number[], vehicleTyp
     query += ` ORDER BY similarity_score ASC LIMIT ?`;
     params.push(limit);
 
-    const result = await conn.execute(query, params);
+    const result = await connection.execute(query, params);
     return result.rows;
   } catch (error) {
     console.error('Error searching similar vehicles:', error);
@@ -218,7 +303,13 @@ export async function searchSimilarVehicles(queryEmbedding: number[], vehicleTyp
 // Insert route optimization
 export async function insertRouteOptimization(route: RouteOptimization) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      console.log('Mock: Route optimization inserted');
+      return { insertId: Math.floor(Math.random() * 1000) };
+    }
+    
+    const result = await connection.execute(
       `INSERT INTO route_optimizations 
        (route_id, origin, destination, waypoints, optimization_score, estimated_time, fuel_cost, embedding, ai_recommendations)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -251,7 +342,24 @@ export async function insertRouteOptimization(route: RouteOptimization) {
 // Search similar routes
 export async function searchSimilarRoutes(queryEmbedding: number[], limit: number = 5) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      // Return mock data for demo
+      return [
+        {
+          route_id: 'RT-001',
+          origin: 'New York Hub',
+          destination: 'Boston Center',
+          optimization_score: 94.2,
+          estimated_time: 180,
+          fuel_cost: 85.50,
+          ai_recommendations: 'Optimal route with minimal traffic delays',
+          similarity_score: 0.08
+        }
+      ];
+    }
+    
+    const result = await connection.execute(
       `SELECT route_id, origin, destination, waypoints, optimization_score, 
               estimated_time, fuel_cost, ai_recommendations,
               VEC_COSINE_DISTANCE(embedding, ?) as similarity_score
@@ -271,7 +379,12 @@ export async function searchSimilarRoutes(queryEmbedding: number[], limit: numbe
 // Get recent events for analysis
 export async function getRecentEvents(hours: number = 24, limit: number = 100) {
   try {
-    const result = await conn.execute(
+    const connection = getConnection();
+    if (!connection) {
+      return [];
+    }
+    
+    const result = await connection.execute(
       `SELECT * FROM logistics_events 
        WHERE timestamp >= DATE_SUB(NOW(), INTERVAL ? HOUR)
        ORDER BY timestamp DESC 
@@ -285,4 +398,84 @@ export async function getRecentEvents(hours: number = 24, limit: number = 100) {
   }
 }
 
-export { conn };
+// Advanced analytics functions
+export async function getFleetPerformanceMetrics(days: number = 7) {
+  try {
+    const connection = getConnection();
+    if (!connection) {
+      return [];
+    }
+    
+    const result = await connection.execute(
+      `SELECT 
+         vehicle_type,
+         COUNT(*) as total_vehicles,
+         AVG(battery_level) as avg_battery,
+         COUNT(CASE WHEN status = 'active' THEN 1 END) as active_count,
+         AVG(JSON_EXTRACT(performance_metrics, '$.fuel_efficiency')) as avg_efficiency
+       FROM vehicles 
+       WHERE updated_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+       GROUP BY vehicle_type`,
+      [days]
+    );
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching fleet metrics:', error);
+    throw error;
+  }
+}
+
+export async function getCostAnalytics(days: number = 30) {
+  try {
+    const connection = getConnection();
+    if (!connection) {
+      return [];
+    }
+    
+    const result = await connection.execute(
+      `SELECT 
+         DATE(timestamp) as date,
+         COUNT(*) as total_events,
+         AVG(JSON_EXTRACT(metadata, '$.cost_impact')) as avg_cost_impact,
+         SUM(CASE WHEN event_type = 'route_optimization' THEN 1 ELSE 0 END) as optimizations
+       FROM logistics_events 
+       WHERE timestamp >= DATE_SUB(NOW(), INTERVAL ? DAY)
+       GROUP BY DATE(timestamp)
+       ORDER BY date DESC`,
+      [days]
+    );
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching cost analytics:', error);
+    throw error;
+  }
+}
+
+export async function getVectorSearchStats() {
+  try {
+    const connection = getConnection();
+    if (!connection) {
+      return { total_vectors: 0, embedded_count: 0, avg_embedding_size: 0 };
+    }
+    
+    const result = await connection.execute(
+      `SELECT 
+         COUNT(*) as total_vectors,
+         COUNT(CASE WHEN embedding IS NOT NULL THEN 1 END) as embedded_count,
+         AVG(CHAR_LENGTH(JSON_UNQUOTE(embedding))) as avg_embedding_size
+       FROM (
+         SELECT embedding FROM logistics_events WHERE embedding IS NOT NULL
+         UNION ALL
+         SELECT embedding FROM vehicles WHERE embedding IS NOT NULL
+         UNION ALL
+         SELECT embedding FROM route_optimizations WHERE embedding IS NOT NULL
+       ) as all_embeddings`
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error fetching vector stats:', error);
+    throw error;
+  }
+}
+
+export { getConnection };

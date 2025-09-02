@@ -30,6 +30,9 @@ import AuthModal from './AuthModal';
 import TiDBAIAgent from './TiDBAIAgent';
 import FleetManagement from './FleetManagement';
 import OnboardingModal from './OnboardingModal';
+import RealTimeMonitoring from './RealTimeMonitoring';
+import VectorSearchDemo from './VectorSearchDemo';
+import AdvancedAnalytics from './AdvancedAnalytics';
 
 const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState('overview');
@@ -233,6 +236,12 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           
+          {activeView === 'advanced-analytics' && (
+            <div className="p-6">
+              <AdvancedAnalytics />
+            </div>
+          )}
+          
           {activeView === 'routes' && (
             <div className="p-6">
               <RoutePlanning />
@@ -254,6 +263,18 @@ const Dashboard: React.FC = () => {
           {activeView === 'tidb-agent' && (
             <div className="p-6">
               <TiDBAIAgent />
+            </div>
+          )}
+          
+          {activeView === 'vector-search' && (
+            <div className="p-6">
+              <VectorSearchDemo />
+            </div>
+          )}
+          
+          {activeView === 'monitoring' && (
+            <div className="p-6">
+              <RealTimeMonitoring />
             </div>
           )}
           

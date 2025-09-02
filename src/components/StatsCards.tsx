@@ -59,6 +59,22 @@ const StatsCards: React.FC = () => {
       changeType: 'positive',
       icon: DollarSign,
       color: 'emerald'
+    },
+    {
+      title: 'Vector Searches',
+      value: '2.1K',
+      change: '+42%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'purple'
+    },
+    {
+      title: 'Data Processed',
+      value: '847GB',
+      change: '+28%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'cyan'
     }
   ];
 

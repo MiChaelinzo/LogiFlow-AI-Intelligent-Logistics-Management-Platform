@@ -18,7 +18,8 @@ import {
   predictiveMaintenanceWorkflow,
   intelligentRouteOptimizationWorkflow,
   emergencyResponseWorkflow,
-  AgentWorkflowResult
+  AgentWorkflowResult,
+  enhancedPredictiveMaintenanceWorkflow
 } from '../lib/aiAgent';
 import { initializeDatabase } from '../lib/tidb';
 
@@ -94,6 +95,9 @@ const TiDBAIAgent: React.FC = () => {
       switch (workflowId) {
         case 'predictive_maintenance':
           result = await predictiveMaintenanceWorkflow('TRK-001');
+          break;
+        case 'enhanced_maintenance':
+          result = await enhancedPredictiveMaintenanceWorkflow('TRK-002');
           break;
         case 'route_optimization':
           result = await intelligentRouteOptimizationWorkflow(

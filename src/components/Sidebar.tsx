@@ -24,10 +24,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     { id: 'fleet-management', label: 'Add Vehicles', icon: Plus },
     { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'analytics', label: 'AI Analytics', icon: BarChart3 },
+    { id: 'advanced-analytics', label: 'Advanced Analytics', icon: BarChart3 },
     { id: 'routes', label: 'Route Planning', icon: MapPin },
     { id: 'drones', label: 'Drone Operations', icon: Plane },
     { id: 'automation', label: 'AI Automation', icon: Zap },
     { id: 'tidb-agent', label: 'TiDB AI Agent', icon: Database },
+    { id: 'vector-search', label: 'Vector Search Demo', icon: Database },
+    { id: 'monitoring', label: 'Real-Time Monitoring', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
