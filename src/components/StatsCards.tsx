@@ -75,6 +75,38 @@ const StatsCards: React.FC = () => {
       changeType: 'positive',
       icon: TrendingUp,
       color: 'cyan'
+    },
+    {
+      title: 'Carbon Offset',
+      value: '2.1T',
+      change: '+45%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'green'
+    },
+    {
+      title: 'Blockchain Txns',
+      value: '15.8K',
+      change: '+67%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'purple'
+    },
+    {
+      title: 'IoT Devices',
+      value: '247',
+      change: '+12%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'orange'
+    },
+    {
+      title: 'ML Accuracy',
+      value: '96.8%',
+      change: '+3.2%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'blue'
     }
   ];
 
@@ -91,7 +123,7 @@ const StatsCards: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (

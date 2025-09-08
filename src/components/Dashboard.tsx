@@ -278,6 +278,30 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           
+          {activeView === 'predictive-analytics' && (
+            <div className="p-6">
+              <PredictiveAnalytics />
+            </div>
+          )}
+          
+          {activeView === 'iot-integration' && (
+            <div className="p-6">
+              <IoTIntegration />
+            </div>
+          )}
+          
+          {activeView === 'carbon-tracking' && (
+            <div className="p-6">
+              <CarbonTracking />
+            </div>
+          )}
+          
+          {activeView === 'blockchain-tracking' && (
+            <div className="p-6">
+              <BlockchainTracking />
+            </div>
+          )}
+          
           {activeView === 'settings' && (
             <div className="p-6">
               <Settings />
