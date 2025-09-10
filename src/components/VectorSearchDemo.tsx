@@ -11,10 +11,12 @@ import {
   Play,
   Loader,
   Copy,
-  Code
+  Code,
+  Activity,
+  Wifi
 } from 'lucide-react';
-import { searchSimilarEvents, searchSimilarVehicles } from '../lib/tidb';
-import { generateEmbedding } from '../lib/aiAgent';
+import { vectorSearchSimilarEvents, vectorSearchSimilarVehicles, testConnection } from '../lib/database';
+import { aiService } from '../lib/aiService';
 
 const VectorSearchDemo: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,66 +25,73 @@ const VectorSearchDemo: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [queryEmbedding, setQueryEmbedding] = useState<number[] | null>(null);
   const [showSQL, setShowSQL] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [searchStats, setSearchStats] = useState({
+    totalSearches: 0,
+    avgResponseTime: 0,
+    lastSearchTime: null as Date | null
+  });
 
+  // Check TiDB connection on mount
+  React.useEffect(() => {
+    checkConnection();
+  }, []);
+
+  const checkConnection = async () => {
+    try {
+      const isConnected = await testConnection();
+      setConnectionStatus(isConnected ? 'connected' : 'error');
+    } catch (error) {
+      setConnectionStatus('error');
+    }
+  };
   const exampleQueries = {
     events: [
-      'vehicle breakdown on highway',
-      'medical emergency delivery',
-      'battery low warning',
-      'route optimization completed'
+      'truck maintenance required urgent',
+      'drone battery critical emergency landing',
+      'route optimization efficiency improvement',
+      'medical delivery time sensitive'
     ],
     vehicles: [
-      'truck with high mileage',
-      'drone for medical delivery',
-      'electric vehicle charging',
-      'maintenance required vehicle'
+      'electric truck high efficiency',
+      'medical delivery drone autonomous',
+      'heavy cargo transport vehicle',
+      'emergency response vehicle fast'
     ]
   };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     
+    const searchStartTime = Date.now();
     setIsSearching(true);
+    
     try {
-      // Generate embedding for search query
-      const embedding = await generateEmbedding(searchQuery);
+      // Generate real embedding using OpenAI
+      const embedding = await aiService.generateEmbedding(searchQuery);
       setQueryEmbedding(embedding);
       
-      // Perform vector search
+      // Perform real vector search in TiDB
       let results;
       if (searchType === 'events') {
-        results = await searchSimilarEvents(embedding, 5);
+        results = await vectorSearchSimilarEvents(embedding, 5);
       } else {
-        results = await searchSimilarVehicles(embedding, undefined, 5);
+        results = await vectorSearchSimilarVehicles(embedding, undefined, 5);
       }
       
       setSearchResults(results);
+      
+      // Update search statistics
+      const responseTime = Date.now() - searchStartTime;
+      setSearchStats(prev => ({
+        totalSearches: prev.totalSearches + 1,
+        avgResponseTime: (prev.avgResponseTime * prev.totalSearches + responseTime) / (prev.totalSearches + 1),
+        lastSearchTime: new Date()
+      }));
+      
     } catch (error) {
       console.error('Vector search failed:', error);
-      // Set mock results for demo
-      if (searchType === 'events') {
-        setSearchResults([
-          {
-            id: 1,
-            event_type: 'maintenance_alert',
-            vehicle_id: 'TRK-001',
-            location: 'Highway 95',
-            description: 'Similar to your search query',
-            severity: 'medium',
-            similarity_score: 0.15
-          }
-        ]);
-      } else {
-        setSearchResults([
-          {
-            vehicle_id: 'TRK-002',
-            vehicle_type: 'truck',
-            current_location: 'Downtown',
-            status: 'active',
-            similarity_score: 0.12
-          }
-        ]);
-      }
+      alert('Vector search failed. Please check your TiDB connection and try again.');
     } finally {
       setIsSearching(false);
     }
@@ -117,7 +126,45 @@ LIMIT 5`;
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">TiDB Vector Search Demo</h1>
-        <p className="text-gray-400">Experience semantic similarity search with TiDB Serverless VECTOR columns</p>
+        <p className="text-gray-400">Real semantic similarity search with live TiDB Serverless VECTOR columns</p>
+      </div>
+
+      {/* Connection Status */}
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-lg ${
+              connectionStatus === 'connected' ? 'bg-green-600' :
+              connectionStatus === 'checking' ? 'bg-yellow-600' : 'bg-red-600'
+            }`}>
+              {connectionStatus === 'checking' ? (
+                <Loader size={20} className="text-white animate-spin" />
+              ) : connectionStatus === 'connected' ? (
+                <Database size={20} className="text-white" />
+              ) : (
+                <AlertTriangle size={20} className="text-white" />
+              )}
+            </div>
+            <div>
+              <h3 className="text-white font-medium">
+                TiDB Serverless {connectionStatus === 'connected' ? 'Connected' : 
+                                connectionStatus === 'checking' ? 'Checking...' : 'Connection Failed'}
+              </h3>
+              <p className="text-gray-400 text-sm">
+                {connectionStatus === 'connected' ? 'Vector search ready for real queries' :
+                 connectionStatus === 'checking' ? 'Testing database connection...' :
+                 'Configure TiDB credentials in .env file'}
+              </p>
+            </div>
+          </div>
+          
+          {searchStats.totalSearches > 0 && (
+            <div className="text-right">
+              <p className="text-white font-medium">{searchStats.totalSearches} searches</p>
+              <p className="text-gray-400 text-sm">{searchStats.avgResponseTime.toFixed(0)}ms avg</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Search Interface */}
@@ -169,18 +216,23 @@ LIMIT 5`;
             
             <button
               onClick={handleSearch}
-              disabled={!searchQuery.trim() || isSearching}
+              disabled={!searchQuery.trim() || isSearching || connectionStatus !== 'connected'}
               className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
             >
               {isSearching ? (
                 <>
                   <Loader size={20} className="animate-spin" />
-                  <span>Searching...</span>
+                  <span>TiDB Searching...</span>
+                </>
+              ) : connectionStatus !== 'connected' ? (
+                <>
+                  <AlertTriangle size={20} />
+                  <span>TiDB Offline</span>
                 </>
               ) : (
                 <>
                   <Search size={20} />
-                  <span>Vector Search</span>
+                  <span>Real Vector Search</span>
                 </>
               )}
             </button>
@@ -192,8 +244,11 @@ LIMIT 5`;
       <div className="bg-gray-800 rounded-xl border border-gray-700">
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">TiDB Vector Search Query</h3>
+            <h3 className="text-lg font-semibold text-white">Live TiDB Vector Search Query</h3>
             <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${
+                connectionStatus === 'connected' ? 'bg-green-400 animate-pulse' : 'bg-red-400'
+              }`}></div>
               <button
                 onClick={() => setShowSQL(!showSQL)}
                 className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
@@ -212,9 +267,17 @@ LIMIT 5`;
         
         {showSQL && (
           <div className="p-4">
+            <div className="mb-3 text-sm text-gray-400">
+              Real TiDB Serverless query with vector operations:
+            </div>
             <pre className="bg-gray-900 rounded-lg p-4 text-green-400 text-sm overflow-x-auto">
               <code>{getSQLQuery()}</code>
             </pre>
+            {queryEmbedding && (
+              <div className="mt-3 text-xs text-gray-500">
+                Query executed with {queryEmbedding.length}-dimensional vector embedding
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -224,10 +287,10 @@ LIMIT 5`;
         <div className="bg-gray-800 rounded-xl border border-gray-700">
           <div className="p-4 border-b border-gray-700">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Vector Search Results</h3>
+              <h3 className="text-lg font-semibold text-white">Live TiDB Vector Search Results</h3>
               <div className="flex items-center space-x-2 bg-green-900/30 px-3 py-2 rounded-lg">
                 <CheckCircle className="text-green-400" size={16} />
-                <span className="text-green-400 text-sm">{searchResults.length} matches found</span>
+                <span className="text-green-400 text-sm">{searchResults.length} real matches</span>
               </div>
             </div>
           </div>
@@ -272,8 +335,9 @@ LIMIT 5`;
                     <div className="text-right">
                       <p className="text-gray-400 text-xs">Similarity Score</p>
                       <p className="text-blue-400 font-semibold">
-                        {(1 - parseFloat(result.similarity_score)).toFixed(3)}
+                        {(1 - parseFloat(result.similarity_score || 0)).toFixed(3)}
                       </p>
+                      <p className="text-gray-500 text-xs">Cosine Distance</p>
                     </div>
                   </div>
                 </div>
@@ -287,26 +351,26 @@ LIMIT 5`;
       {queryEmbedding && (
         <div className="bg-gray-800 rounded-xl border border-gray-700">
           <div className="p-4 border-b border-gray-700">
-            <h3 className="text-lg font-semibold text-white">Query Vector Embedding</h3>
-            <p className="text-gray-400 text-sm">Generated 1536-dimensional vector for semantic search</p>
+            <h3 className="text-lg font-semibold text-white">Real OpenAI Vector Embedding</h3>
+            <p className="text-gray-400 text-sm">Live 1536-dimensional vector generated by text-embedding-3-small</p>
           </div>
           
           <div className="p-4">
             <div className="bg-gray-900 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-400 text-sm">Vector Dimensions: 1536</span>
+                <span className="text-gray-400 text-sm">Real Vector Dimensions: {queryEmbedding.length}</span>
                 <button
                   onClick={() => copyToClipboard(JSON.stringify(queryEmbedding.slice(0, 10)))}
                   className="text-blue-400 hover:text-blue-300 text-sm"
                 >
-                  Copy Sample
+                  Copy Real Data
                 </button>
               </div>
               <div className="text-green-400 text-xs font-mono">
                 [{queryEmbedding.slice(0, 10).map(n => n.toFixed(6)).join(', ')}, ...]
               </div>
               <p className="text-gray-500 text-xs mt-2">
-                Showing first 10 dimensions of {queryEmbedding.length}-dimensional vector
+                Live OpenAI embedding - first 10 of {queryEmbedding.length} dimensions
               </p>
             </div>
           </div>

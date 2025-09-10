@@ -20,6 +20,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'database-setup', label: 'TiDB Setup', icon: Database },
     { id: 'fleet', label: 'Fleet Management', icon: Truck },
     { id: 'fleet-management', label: 'Add Vehicles', icon: Plus },
     { id: 'inventory', label: 'Inventory', icon: Package },
@@ -31,6 +32,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange }) => {
     { id: 'tidb-agent', label: 'TiDB AI Agent', icon: Database },
     { id: 'vector-search', label: 'Vector Search Demo', icon: Database },
     { id: 'monitoring', label: 'Real-Time Monitoring', icon: BarChart3 },
+    { id: 'predictive-analytics', label: 'Predictive Analytics', icon: TrendingUp },
+    { id: 'iot-integration', label: 'IoT Integration', icon: Wifi },
+    { id: 'carbon-tracking', label: 'Carbon Tracking', icon: Leaf },
+    { id: 'blockchain-tracking', label: 'Blockchain Tracking', icon: Shield },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

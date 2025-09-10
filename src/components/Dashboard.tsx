@@ -33,6 +33,11 @@ import OnboardingModal from './OnboardingModal';
 import RealTimeMonitoring from './RealTimeMonitoring';
 import VectorSearchDemo from './VectorSearchDemo';
 import AdvancedAnalytics from './AdvancedAnalytics';
+import PredictiveAnalytics from './PredictiveAnalytics';
+import IoTIntegration from './IoTIntegration';
+import CarbonTracking from './CarbonTracking';
+import BlockchainTracking from './BlockchainTracking';
+import DatabaseSetup from './DatabaseSetup';
 
 const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState('overview');
@@ -209,6 +214,12 @@ const Dashboard: React.FC = () => {
               </div>
               
               <InventoryOverview />
+            </div>
+          )}
+          
+          {activeView === 'database-setup' && (
+            <div className="p-6">
+              <DatabaseSetup />
             </div>
           )}
           

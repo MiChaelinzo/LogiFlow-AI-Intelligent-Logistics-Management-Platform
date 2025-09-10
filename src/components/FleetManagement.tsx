@@ -15,8 +15,12 @@ import {
   Phone,
   Mail,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Loader,
+  Database
 } from 'lucide-react';
+import { insertVehicle, getAllVehicles } from '../lib/database';
+import { aiService } from '../lib/aiService';
 
 interface Vehicle {
   id: string;
@@ -41,6 +45,8 @@ const FleetManagement: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState<Partial<Vehicle>>({
     type: 'truck',
     status: 'idle',
@@ -48,9 +54,91 @@ const FleetManagement: React.FC = () => {
     fuelType: 'electric'
   });
 
-  const handleAddVehicle = () => {
+  // Load real vehicles from TiDB on component mount
+  React.useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  const loadVehicles = async () => {
+    setIsLoading(true);
+    try {
+      const realVehicles = await getAllVehicles();
+      const formattedVehicles: Vehicle[] = realVehicles.map(v => ({
+        id: v.vehicle_id,
+        name: v.name,
+        type: v.vehicle_type as 'truck' | 'drone',
+        status: v.status,
+        battery: v.battery_level,
+        location: v.current_location,
+        driver: v.driver_name,
+        driverPhone: v.driver_phone,
+        driverEmail: v.driver_email,
+        capacity: v.capacity,
+        fuelType: v.fuel_type,
+        lastMaintenance: v.last_maintenance ? new Date(v.last_maintenance).toISOString().split('T')[0] : '',
+        nextMaintenance: v.next_maintenance ? new Date(v.next_maintenance).toISOString().split('T')[0] : '',
+        licensePlate: v.license_plate,
+        model: v.model,
+        year: v.year
+      }));
+      setVehicles(formattedVehicles);
+    } catch (error) {
+      console.error('Failed to load vehicles:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleAddVehicle = async () => {
     if (!formData.name || !formData.model) return;
     
+    setIsSaving(true);
+    try {
+      const vehicleId = `${formData.type?.toUpperCase()}-${String(vehicles.length + 1).padStart(3, '0')}`;
+      
+      // Generate vector embedding for the vehicle
+      const vehicleText = `${formData.name} ${formData.type} ${formData.model} ${formData.capacity} ${formData.fuelType}`;
+      const embedding = await aiService.generateEmbedding(vehicleText);
+      
+      const vehicleData = {
+        vehicle_id: vehicleId,
+        vehicle_type: formData.type,
+        name: formData.name,
+        model: formData.model,
+        year: formData.year,
+        license_plate: formData.licensePlate,
+        current_location: formData.location || 'Base Station',
+        battery_level: formData.battery || 100,
+        fuel_level: 100,
+        status: formData.status || 'idle',
+        driver_name: formData.driver,
+        driver_phone: formData.driverPhone,
+        driver_email: formData.driverEmail,
+        capacity: formData.capacity,
+        fuel_type: formData.fuelType || 'electric',
+        embedding,
+        performance_metrics: {
+          fuel_efficiency: 8 + Math.random() * 4,
+          engine_temp: 80 + Math.random() * 10,
+          tire_pressure: 32 + Math.random() * 2
+        }
+      };
+      
+      await insertVehicle(vehicleData);
+      
+      // Reload vehicles from database
+      await loadVehicles();
+      
+      setShowAddModal(false);
+      setFormData({ type: 'truck', status: 'idle', battery: 100, fuelType: 'electric' });
+    } catch (error) {
+      console.error('Failed to add vehicle:', error);
+      alert('Failed to add vehicle. Please check your TiDB connection.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddVehicleOld = () => {
     const newVehicle: Vehicle = {
       id: `${formData.type?.toUpperCase()}-${String(vehicles.length + 1).padStart(3, '0')}`,
       name: formData.name!,
@@ -96,6 +184,8 @@ const FleetManagement: React.FC = () => {
   };
 
   const handleDeleteVehicle = (id: string) => {
+    // For now, just remove from local state
+    // In production, you'd call a delete API
     setVehicles(vehicles.filter(v => v.id !== id));
   };
 
@@ -140,6 +230,15 @@ const FleetManagement: React.FC = () => {
 
       {/* Fleet Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {isLoading && (
+          <div className="md:col-span-4 bg-gray-800 rounded-xl border border-gray-700 p-6 text-center">
+            <Loader size={32} className="text-blue-400 animate-spin mx-auto mb-4" />
+            <p className="text-gray-400">Loading vehicles from TiDB Serverless...</p>
+          </div>
+        )}
+        
+        {!isLoading && (
+          <>
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <Truck className="text-blue-400" size={24} />
@@ -191,23 +290,28 @@ const FleetManagement: React.FC = () => {
           </h3>
           <p className="text-gray-400 text-sm">Maintenance</p>
         </div>
+          </>
+        )}
       </div>
 
       {/* Vehicle List */}
-      {vehicles.length === 0 ? (
+      {!isLoading && vehicles.length === 0 ? (
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-12 text-center">
+          <Database size={48} className="text-blue-600 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-white mb-2">Connect to TiDB Serverless</h3>
+          <p className="text-gray-400 mb-6">Add your TiDB credentials to .env file to start managing real vehicles</p>
           <Truck size={48} className="text-gray-600 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white mb-2">No Vehicles Added Yet</h3>
-          <p className="text-gray-400 mb-6">Start building your fleet by adding your first vehicle</p>
+          <p className="text-gray-400 mb-6">Add vehicles to your TiDB Serverless database</p>
           <button
             onClick={() => setShowAddModal(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 mx-auto transition-colors"
           >
             <Plus size={20} />
-            <span>Add Your First Vehicle</span>
+            <span>Add Vehicle to TiDB</span>
           </button>
         </div>
-      ) : (
+      ) : !isLoading && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {vehicles.map((vehicle) => (
             <div key={vehicle.id} className="bg-gray-800 rounded-xl border border-gray-700 p-6">
@@ -544,10 +648,20 @@ const FleetManagement: React.FC = () => {
                 </button>
                 <button
                   onClick={editingVehicle ? handleUpdateVehicle : handleAddVehicle}
+                  disabled={isSaving}
                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center space-x-2 transition-colors"
                 >
-                  <Save size={20} />
-                  <span>{editingVehicle ? 'Update Vehicle' : 'Add Vehicle'}</span>
+                  {isSaving ? (
+                    <>
+                      <Loader size={20} className="animate-spin" />
+                      <span>Saving to TiDB...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save size={20} />
+                      <span>{editingVehicle ? 'Update in TiDB' : 'Save to TiDB'}</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
