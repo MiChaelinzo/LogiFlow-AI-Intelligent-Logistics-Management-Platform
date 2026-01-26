@@ -2,6 +2,12 @@
 
 [![Watch the DEMO video](https://img.youtube.com/vi/Zm2QzwYqBes/maxresdefault.jpg)](https://www.youtube.com/watch?v=Zm2QzwYqBes)
 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=Zm2QzwYqBes">
+    <img src="https://img.youtube.com/vi/Zm2QzwYqBes/maxresdefault.jpg" alt="Watch the video" style="width:100%; max-width:600px;">
+  </a>
+</p>
+
 A **fully functional** intelligent logistics management platform powered by **real TiDB Serverless** vector search and multi-step AI agents. This application provides **production-ready** agentic workflows that chain together live data ingestion, vector search, AI analysis, and automated actions.
 
 ## 🚀 Key Features
