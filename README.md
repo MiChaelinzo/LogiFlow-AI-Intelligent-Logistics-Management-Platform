@@ -1,6 +1,7 @@
 # LogiFlow AI - Real TiDB Serverless Logistics Platform
 
-*Watch the DEMO video* 👇🏻⏬
+**Watch the DEMO video** 👇🏻⏬
+
 [![Watch the DEMO video](https://img.youtube.com/vi/Zm2QzwYqBes/maxresdefault.jpg)](https://www.youtube.com/watch?v=Zm2QzwYqBes)
 
 A **fully functional** intelligent logistics management platform powered by **real TiDB Serverless** vector search and multi-step AI agents. This application provides **production-ready** agentic workflows that chain together live data ingestion, vector search, AI analysis, and automated actions.
