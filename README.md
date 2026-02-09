@@ -1,6 +1,6 @@
 # LogiFlow AI - Real TiDB Serverless Logistics Platform
 
-**Watch the DEMO video** 👇🏻⏬
+**Watch the DEMO video** 👇🏻⏬⏯️
 
 [![Watch the DEMO video](https://img.youtube.com/vi/Zm2QzwYqBes/maxresdefault.jpg)](https://www.youtube.com/watch?v=Zm2QzwYqBes)
 
