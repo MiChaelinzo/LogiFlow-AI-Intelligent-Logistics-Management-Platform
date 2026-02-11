@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@tidbcloud/serverless": "^0.1.1",
-    "axios": "^1.12.0",
+    "axios": "^1.13.5",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.344.0",
     "mysql2": "^3.6.5",
